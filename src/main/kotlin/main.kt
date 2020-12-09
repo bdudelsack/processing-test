@@ -17,7 +17,7 @@ class Sketch : PApplet() {
         img.resize(Math.round(img.width * factor), Math.round(img.height * factor))
         img.filter(GRAY)
 
-        size(Math.round(img.width * gridSize + padding*2), Math.round(img.height * gridSize + padding*2))
+        size(Math.round(img.width * gridSize + padding * 2), Math.round(img.height * gridSize + padding * 2))
         noLoop()
     }
 
@@ -26,8 +26,8 @@ class Sketch : PApplet() {
 
         background(color(255, 255, 255));
 
-        for (y in 0..img.height - 1) {
-            for (x in 0..img.width - 1) {
+        repeat(img.height - 1) { y ->
+            repeat(img.width - 1) { x ->
                 val loc = x + y * img.width
 
                 val pixel = img.pixels[loc]
@@ -43,41 +43,29 @@ class Sketch : PApplet() {
         endRecord()
     }
 
-    fun drawZigZag(x: Float, y: Float, w: Float, h: Float, steps: Int, padding: Float = 2f) {
-        val step = (h - 2 * padding) / steps
+    fun zigZagShape(w: Float, h: Float, steps: Int, padding: Float = 2f, flip: Boolean = false): PShape =
+        createShape().apply {
+            val step = (h - 2 * padding) / steps
 
-        repeat(steps) {
-            line(x + padding, y + step * it + padding, x + w - padding, y + step * (it + 0.5f) + padding)
-            line(x + w - padding, y + step * (it + 0.5f) + padding, x + padding, y + step * (it + 1) + padding)
+            beginShape()
+            noFill()
+            strokeWeight(0.5f);
+            strokeJoin(ROUND)
+
+            if (flip) {
+                translate(w / 2, h / 2)
+                rotate(PI / 2.0f)
+                translate(-w / 2, -h / 2)
+            }
+
+            repeat(steps) {
+                vertex(padding, step * it + padding)
+                vertex(w - padding, step * (it + 0.5f) + padding)
+            }
+
+            vertex(padding, h - padding)
+            endShape()
         }
-    }
-
-    fun zigZagShape(w: Float, h: Float, steps: Int, padding: Float = 2f, flip: Boolean = false): PShape {
-        val shape = createShape()
-        val step = (h - 2 * padding) / steps
-
-        shape.beginShape()
-        shape.noFill()
-        shape.strokeWeight(0.5f);
-        shape.strokeJoin(ROUND)
-
-        if(flip) {
-            shape.translate(w / 2, h / 2)
-            shape.rotate(PI / 2.0f)
-            shape.translate(-w / 2, -h / 2)
-
-        }
-
-        repeat(steps) {
-            shape.vertex(padding, step * it + padding)
-            shape.vertex(w - padding, step * (it + 0.5f) + padding)
-        }
-
-        shape.vertex(padding, h - padding)
-        shape.endShape()
-
-        return shape
-    }
 }
 
 fun main() {
